@@ -1,0 +1,45 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      Role     @default(USER)
+  products  Product[]
+  farms     Farm[]
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  VENDOR
+  EDITOR
+  USER
+}
+
+model Product {
+  id        String  @id @default(cuid())
+  name      String
+  price     Float
+  currency  String  @default("IQD")
+  image     String
+  farm      Farm?   @relation(fields: [farmId], references: [id])
+  farmId    String?
+}
+
+model Farm {
+  id        String   @id @default(cuid())
+  name      String
+  location  String
+  capacity  Int
+  rating    Float    @default(0)
+  description String
+  products  Product[]
+}
